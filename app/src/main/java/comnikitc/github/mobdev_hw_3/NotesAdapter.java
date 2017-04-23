@@ -40,7 +40,7 @@ public class NotesAdapter extends BaseAdapter{
 
         if(notesCursor.moveToFirst()) {
             do {
-                NoteModel note = new NoteModel(notesCursor.getString(1), notesCursor.getString(2),
+                NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1), notesCursor.getString(2),
                         notesCursor.getInt(3));
                 list.add(note);
             }
@@ -81,7 +81,7 @@ public class NotesAdapter extends BaseAdapter{
 
         if (text.length() > maxLengthLine) {
             if (arrayWords[0].length() > maxLengthLine) {
-                shortLine = arrayWords[0].substring(maxLengthLine);
+                shortLine = arrayWords[0].substring(0, maxLengthLine);
             }
             shortLine += "...";
         }
@@ -96,7 +96,7 @@ public class NotesAdapter extends BaseAdapter{
             view = lInflater.inflate(R.layout.item, parent, false);
         }
 
-        NoteModel currentNote = listNotes.get(position);
+        final NoteModel currentNote = listNotes.get(position);
         String shortName = GetShortString(currentNote.getName());
         String shortDescription = GetShortString(currentNote.getText());
 
@@ -113,7 +113,7 @@ public class NotesAdapter extends BaseAdapter{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);
-                intent.putExtra("id", position + 1);
+                intent.putExtra("id", currentNote.getId());
                 context.startActivity(intent);
             }
         });

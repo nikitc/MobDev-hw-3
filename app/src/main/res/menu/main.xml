@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/deleteNote"
+        android:icon="@drawable/ic_delete_forever_white_24dp"
+        app:showAsAction="always"
+        android:title="@string/deleteNote">
+    </item>
+    <item
         android:id="@+id/chooseColor"
         android:icon="@drawable/ic_palette_white_24dp"
         app:showAsAction="always"

@@ -116,6 +116,9 @@ public class CreateNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.deleteNote:
+                DeleteNote();
+                return true;
             case R.id.save:
                 SaveData();
                 return true;
@@ -125,6 +128,19 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void DeleteNote() {
+        if (inEditMode) {
+            db = dbHelper.getWritableDatabase();
+            db.delete(DatabaseHelper.TABLE, "_id = ?", new String[]{String.valueOf(idItem)});
+        }
+
+        Toast toast = Toast.makeText(getApplicationContext(),
+                R.string.deleteChooseNote, Toast.LENGTH_SHORT);
+        toast.show();
+
+        GoHome();
     }
 
     public void GoChooseColor() {

@@ -9,4 +9,6 @@
     <string name="saveChooseColor">Цвет сохранен</string>
     <string name="startEdit">Старт выбора</string>
     <string name="finishEdit">Конец выбора</string>
+    <string name="deleteNote">Удалить заметку</string>
+    <string name="deleteChooseNote">Заметка удалена</string>
 </resources>

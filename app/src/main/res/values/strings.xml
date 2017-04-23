@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="save">Save</string>
+    <string name="color">Color</string>
+    <string name="saveColor">Save Color</string>
+    <string name="saveNote">Заметка сохранена</string>
+    <string name="fillNote">Заполните заметку</string>
+    <string name="saveChooseColor">Цвет сохранен</string>
+    <string name="startEdit">Старт выбора</string>
+    <string name="finishEdit">Конец выбора</string>
+</resources>

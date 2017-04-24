@@ -43,7 +43,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:id="@+id/editButton"
-        android:background="@android:drawable/ic_menu_edit"
+        android:background="@drawable/ic_mode_edit_black_24dp"
         android:layout_marginRight="16dp" />
 
 </LinearLayout>

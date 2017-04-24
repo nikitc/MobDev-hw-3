@@ -26,28 +26,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addButton.setOnClickListener(this);
 
         notesList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private int mLastFirstVisibleItem;
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (isEndListView(scrollState, notesList, notesAdapter)) {
-                    addButton.setVisibility(View.INVISIBLE);
-                }
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                addButton.setVisibility(View.VISIBLE);
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                if(mLastFirstVisibleItem < firstVisibleItem) {
+                    addButton.hide();
+                }
+                if(mLastFirstVisibleItem > firstVisibleItem) {
+                    addButton.show();
+                }
+
+                mLastFirstVisibleItem=firstVisibleItem;
             }
         });
-    }
-
-    private boolean isEndListView(int scrollState, ListView notesList, NotesAdapter notesAdapter) {
-        int maxCountOnActivity = 5;
-        int count =  notesList.getLastVisiblePosition() - notesList.getHeaderViewsCount() -
-                notesList.getFooterViewsCount();
-
-        return  (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) &&
-                (count >= (notesAdapter.getCount() - 1)) &&
-                (notesAdapter.getCount() > maxCountOnActivity);
     }
 
     @Override

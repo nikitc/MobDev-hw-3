@@ -9,9 +9,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -41,11 +41,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         int color = Color.RED;
-        ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
-        Drawable drawable = getResources().getDrawable(R.drawable.circle);
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC);
-        colorView.setBackground(drawable);
-        colorView.setTag(color);
+        CreateChooseColorView(color);
     }
 
     @Override
@@ -56,11 +52,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         int color = data.getIntExtra("color", Color.RED);
-        ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
-        Drawable drawable = getResources().getDrawable(R.drawable.circle);
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC);
-        colorView.setBackground(drawable);
-        colorView.setTag(color);
+        CreateChooseColorView(color);
     }
 
     @Override
@@ -76,7 +68,17 @@ public class CreateNoteActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 
         int color = savedInstanceState.getInt("chooseColor");
+        CreateChooseColorView(color);
+    }
+
+    public void CreateChooseColorView(int color) {
         ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
+        colorView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GoChooseColor();
+            }
+        });
         Drawable drawable = getResources().getDrawable(R.drawable.circle);
         drawable.setColorFilter(color, PorterDuff.Mode.SRC);
         colorView.setBackground(drawable);
@@ -97,12 +99,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         descriptionEditText.setText(notesCursor.getString(2));
 
         int color = notesCursor.getInt(3);
-
-        ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
-        Drawable drawable = getResources().getDrawable(R.drawable.circle);
-        drawable.setColorFilter(color, PorterDuff.Mode.SRC);
-        colorView.setBackground(drawable);
-        colorView.setTag(color);
+        CreateChooseColorView(color);
         notesCursor.close();
 
     }

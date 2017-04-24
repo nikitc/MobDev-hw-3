@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -108,8 +109,9 @@ public class NotesAdapter extends BaseAdapter{
         drawable.setColorFilter(currentNote.getColor(), PorterDuff.Mode.SRC);
         colorView.setBackground(drawable);
 
-        Button editButton = (Button) view.findViewById(R.id.editButton);
-        editButton.setOnClickListener( new View.OnClickListener() {
+        LinearLayout item = (LinearLayout) view.findViewById(R.id.itemLayout);
+
+        item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -32,6 +34,7 @@ public class ColorActivity extends AppCompatActivity {
         scroll = (ColorPickerScroll) findViewById(R.id.colorPickerScroll);
         CreateColorPicker();
         CreateChooseColorView();
+
     }
 
     @Override
@@ -149,10 +152,11 @@ public class ColorActivity extends AppCompatActivity {
             float x = 0;
             float y = 0;
 
+
+
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 ColorButton currentColorButton = (ColorButton) view;
-
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         x = event.getX();
@@ -178,9 +182,31 @@ public class ColorActivity extends AppCompatActivity {
                 }
                 return false;
             }
+
         };
         return onClickListener;
     }
+
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "Gestures";
+
+        public MyGestureListener() {
+
+        }
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+            return true;
+        }
+    }
+
 
     protected int getSign(double number) {
         if (number > 0)

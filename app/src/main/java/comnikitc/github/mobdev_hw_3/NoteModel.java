@@ -1,13 +1,13 @@
 package comnikitc.github.mobdev_hw_3;
 
 
-public class NoteModel {
+class NoteModel {
     private String name;
     private String text;
     private int color;
     private int id;
 
-    public NoteModel(int id, String name, String text, int color) {
+    NoteModel(int id, String name, String text, int color) {
         this.name = name;
         this.text = text;
         this.color = color;

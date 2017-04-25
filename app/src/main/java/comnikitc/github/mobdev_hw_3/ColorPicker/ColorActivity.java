@@ -32,8 +32,8 @@ public class ColorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_color);
         scroll = (ColorPickerScroll) findViewById(R.id.colorPickerScroll);
-        CreateColorPicker();
-        CreateChooseColorView();
+        createColorPicker();
+        createChooseColorView();
 
     }
 
@@ -56,7 +56,7 @@ public class ColorActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.saveColor:
-                GoToCreateNote();
+                goToCreateNote();
                 return true;
         }
 
@@ -66,15 +66,15 @@ public class ColorActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        DisplayCurrentStatus(savedInstanceState.getFloatArray("chooseColor"));
+        displayCurrentStatus(savedInstanceState.getFloatArray("chooseColor"));
     }
 
-    private void CreateChooseColorView() {
+    private void createChooseColorView() {
         ColorImageView chooseColorView = (ColorImageView) findViewById(R.id.chooseColorImage);
         chooseColorView.setHsvColor(new float[] {0, 1.0f, 0});
     }
 
-    protected void GoToCreateNote() {
+    private void goToCreateNote() {
         ColorImageView chooseColorView = (ColorImageView) findViewById(R.id.chooseColorImage);
         int color = Color.HSVToColor(chooseColorView.getHsvColor());
 
@@ -89,7 +89,7 @@ public class ColorActivity extends AppCompatActivity {
         finish();
     }
 
-    protected void DisplayCurrentStatus(float[] hsvColor) {
+    private void displayCurrentStatus(float[] hsvColor) {
 
         ColorImageView chooseColorView = (ColorImageView) findViewById(R.id.chooseColorImage);
         chooseColorView.setHsvColor(hsvColor);
@@ -99,15 +99,15 @@ public class ColorActivity extends AppCompatActivity {
 
         chooseColorView.setBackgroundColor(Color.HSVToColor(hsvColor));
 
-        String newRGBColor = ColorButton.GetStringRGBColor(hsvColor);
-        String newHSVColor = ColorButton.GetStringHSVColor(hsvColor);
+        String newRGBColor = ColorButton.getStringRGBColor(hsvColor);
+        String newHSVColor = ColorButton.getStringHSVColor(hsvColor);
 
         rgbText.setText(newRGBColor);
         hsvText.setText(newHSVColor);
     }
 
 
-    protected void DisplayOnPalitreStatus(ColorButton currentColorButton) {
+    private void displayOnPalitreStatus(ColorButton currentColorButton) {
 
         ImageView chooseColorView = (ImageView) findViewById(R.id.currentColorImage);
 
@@ -118,26 +118,26 @@ public class ColorActivity extends AppCompatActivity {
         chooseColorView.setBackgroundColor(
                 Color.HSVToColor(currentColorButton.getCurrentColor()));
 
-        String newRGBColor = ColorButton.GetStringRGBColor(currentColorButton.getCurrentColor());
-        String newHSVColor = ColorButton.GetStringHSVColor(currentColorButton.getCurrentColor());
+        String newRGBColor = ColorButton.getStringRGBColor(currentColorButton.getCurrentColor());
+        String newHSVColor = ColorButton.getStringHSVColor(currentColorButton.getCurrentColor());
 
         rgbText.setText(newRGBColor);
         hsvText.setText(newHSVColor);
     }
 
-    protected boolean IsDoubleClick(long lastClickTime) {
+    private boolean isDoubleClick(long lastClickTime) {
         final long doublePressInterval = 500;
         return SystemClock.elapsedRealtime() - lastClickTime < doublePressInterval;
     }
 
-    protected View.OnLongClickListener GetOnLongClickListener() {
+    private View.OnLongClickListener getOnLongClickListener() {
         View.OnLongClickListener onClickListener = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.startEdit, Toast.LENGTH_SHORT);
                 toast.show();
-                DisableColorPickerScroll();
+                disableColorPickerScroll();
                 view.getParent().requestDisallowInterceptTouchEvent(true);
                 return true;
             }
@@ -147,27 +147,27 @@ public class ColorActivity extends AppCompatActivity {
     }
 
 
-    protected View.OnTouchListener GetOnTouchListener() {
+    private View.OnTouchListener getOnTouchListener() {
         View.OnTouchListener onClickListener = new View.OnTouchListener() {
             float x = 0;
             float y = 0;
 
 
-
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 ColorButton currentColorButton = (ColorButton) view;
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         x = event.getX();
                         y = event.getY();
-                        HandleActionDown(currentColorButton);
+                        handleActionDown(currentColorButton);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (scroll.getCanMove()) {
                             break;
                         }
-                        HandleActionMove(currentColorButton, x, y, event.getX(), event.getY());
+                        handleActionMove(currentColorButton, x, y, event.getX(), event.getY());
                         break;
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP:
@@ -188,27 +188,7 @@ public class ColorActivity extends AppCompatActivity {
     }
 
 
-    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "Gestures";
-
-        public MyGestureListener() {
-
-        }
-
-        @Override
-        public boolean onDown(MotionEvent event) {
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2,
-                               float velocityX, float velocityY) {
-            return true;
-        }
-    }
-
-
-    protected int getSign(double number) {
+    private int getSign(double number) {
         if (number > 0)
             return 1;
         else if (number < 0)
@@ -218,7 +198,7 @@ public class ColorActivity extends AppCompatActivity {
     }
 
 
-    protected void HandleActionMove(ColorButton currentColorButton, float oldX, float oldY,
+    private void handleActionMove(ColorButton currentColorButton, float oldX, float oldY,
                                     float x, float y) {
         float deltaX = x - oldX;
         float deltaY = oldY - y;
@@ -227,7 +207,7 @@ public class ColorActivity extends AppCompatActivity {
                     getSign(deltaX) > 0) ||
                     ((currentColorButton.getCurrentColor()[0] == currentColorButton.getLeftBorder() &&
                             getSign(deltaX) < 0))) {
-                CallVibrator();
+                callVibrator();
             } else {
                 currentColorButton.getCurrentColor()[0] += 0.25 * getSign(deltaX);
             }
@@ -236,7 +216,7 @@ public class ColorActivity extends AppCompatActivity {
                     getSign(deltaY) > 0) ||
                     ((Math.max(currentColorButton.getCurrentColor()[2], 0) == currentColorButton.downBorderColor &&
                             getSign(deltaY) < 0))) {
-                CallVibrator();
+                callVibrator();
             } else {
                 currentColorButton.getCurrentColor()[2] += 0.025 * getSign(deltaY);
             }
@@ -244,35 +224,35 @@ public class ColorActivity extends AppCompatActivity {
 
         currentColorButton.setBackgroundColor(
                 Color.HSVToColor(currentColorButton.getCurrentColor()));
-        DisplayOnPalitreStatus(currentColorButton);
+        displayOnPalitreStatus(currentColorButton);
     }
 
-    protected void HandleActionDown(ColorButton currentColorButton) {
+    private void handleActionDown(ColorButton currentColorButton) {
 
-        if (IsDoubleClick(currentColorButton.lastClickTime)) {
+        if (isDoubleClick(currentColorButton.lastClickTime)) {
             currentColorButton.setBackgroundColor(
                     Color.HSVToColor(currentColorButton.getOriginalColor()));
-            currentColorButton.DiscardColor();
-            DisplayOnPalitreStatus(currentColorButton);
+            currentColorButton.discardColor();
+            displayOnPalitreStatus(currentColorButton);
             currentColorButton.lastClickTime = SystemClock.elapsedRealtime();
             return;
         }
 
         currentColorButton.lastClickTime = SystemClock.elapsedRealtime();
-        DisplayCurrentStatus(currentColorButton.getCurrentColor());
+        displayCurrentStatus(currentColorButton.getCurrentColor());
     }
 
-    protected void DisableColorPickerScroll() {
+    private void disableColorPickerScroll() {
         ColorPickerScroll scroll = (ColorPickerScroll) findViewById(R.id.colorPickerScroll);
         scroll.setCanMove(false);
     }
 
-    protected void CallVibrator() {
+    private void callVibrator() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(100);
     }
 
-    protected void CreateColorPicker() {
+    private void createColorPicker() {
         float[] pixelHSV = new float[3];
         pixelHSV[0] = 12.25f;
         pixelHSV[1] = 1;
@@ -284,12 +264,12 @@ public class ColorActivity extends AppCompatActivity {
 
         for (int i = 0; i < countButtons; i++) {
             ColorButton button = new ColorButton(this, pixelHSV.clone());
-            button.setOnLongClickListener(GetOnLongClickListener());
-            button.setOnTouchListener(GetOnTouchListener());
+            button.setOnLongClickListener(getOnLongClickListener());
+            button.setOnTouchListener(getOnTouchListener());
             colorPickerLayout.addView(button);
             pixelHSV[0] += step;
         }
-        GradientColorPicker.SetGradientBackGround(colorPickerLayout);
+        GradientColorPicker.setGradientBackGround(colorPickerLayout);
     }
 
 }

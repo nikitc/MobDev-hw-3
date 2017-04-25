@@ -8,16 +8,24 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createListView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createListView();
+    }
+
+    private void createListView() {
         setContentView(R.layout.activity_main);
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-
         final ListView notesList = (ListView) findViewById(R.id.notesListView);
         final NotesAdapter notesAdapter = new NotesAdapter(this, databaseHelper);
         notesList.setAdapter(notesAdapter);
@@ -27,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         notesList.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
             }
@@ -41,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     addButton.show();
                 }
 
-                mLastFirstVisibleItem=firstVisibleItem;
+                mLastFirstVisibleItem = firstVisibleItem;
             }
         });
     }
@@ -51,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.addNoteFab:
                 Intent intent = new Intent(this, CreateNoteActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
         }
     }

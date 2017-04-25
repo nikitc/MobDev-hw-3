@@ -18,21 +18,21 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class NotesAdapter extends BaseAdapter{
+class NotesAdapter extends BaseAdapter{
 
     private final Context context;
     private ArrayList<NoteModel> listNotes;
     private DatabaseHelper dbHelper;
     private LayoutInflater lInflater;
 
-    public NotesAdapter(Context context, DatabaseHelper dbHelper) {
+    NotesAdapter(Context context, DatabaseHelper dbHelper) {
         this.context = context;
         this.dbHelper = dbHelper;
         listNotes = getNotesFromDB();
-        lInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public ArrayList<NoteModel> getNotesFromDB() {
+    private ArrayList<NoteModel> getNotesFromDB() {
         ArrayList<NoteModel> list = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -69,26 +69,6 @@ public class NotesAdapter extends BaseAdapter{
         return position;
     }
 
-    public String GetShortString(String text) {
-        String shortLine = "";
-        String[] arrayWords = text.split(" ");
-        int maxLengthLine = 23;
-        for (String arrayWord : arrayWords) {
-            String currentLine = shortLine + " " + arrayWord;
-            if (currentLine.length() < maxLengthLine) {
-                shortLine += " " + arrayWord;
-            }
-        }
-
-        if (text.length() > maxLengthLine) {
-            if (arrayWords[0].length() > maxLengthLine) {
-                shortLine = arrayWords[0].substring(0, maxLengthLine);
-            }
-            shortLine += "...";
-        }
-
-        return shortLine;
-    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -98,11 +78,9 @@ public class NotesAdapter extends BaseAdapter{
         }
 
         final NoteModel currentNote = listNotes.get(position);
-        String shortName = GetShortString(currentNote.getName());
-        String shortDescription = GetShortString(currentNote.getText());
 
-        ((TextView) view.findViewById(R.id.name)).setText(shortName);
-        ((TextView) view.findViewById(R.id.description)).setText(shortDescription);
+        ((TextView) view.findViewById(R.id.name)).setText(currentNote.getName());
+        ((TextView) view.findViewById(R.id.description)).setText(currentNote.getText());
 
         ImageView colorView = (ImageView) view.findViewById(R.id.color);
         Drawable drawable = context.getResources().getDrawable(R.drawable.circle);

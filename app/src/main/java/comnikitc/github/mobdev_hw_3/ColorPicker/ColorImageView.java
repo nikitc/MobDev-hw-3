@@ -15,6 +15,7 @@ public class ColorImageView extends ImageView {
     public void setHsvColor(float[] value) {
         hsvColor = value;
     }
+
     public ColorImageView(Context context, float[] hsv) {
         super(context);
         this.hsvColor = hsv;

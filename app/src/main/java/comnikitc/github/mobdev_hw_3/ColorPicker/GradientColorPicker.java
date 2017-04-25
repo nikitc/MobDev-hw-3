@@ -17,14 +17,14 @@ class GradientColorPicker {
 
     }
 
-    static void SetGradientBackGround(final LinearLayout colorPickerLayout) {
+    static void setGradientBackGround(final LinearLayout colorPickerLayout) {
         ShapeDrawable.ShaderFactory factory = new ShapeDrawable.ShaderFactory() {
             @Override
             public Shader resize(int width, int height) {
                 LinearGradient lg = new LinearGradient(0, 0,
                         colorPickerLayout.getWidth(), colorPickerLayout.getHeight(),
-                        GradientColorPicker.GetValueColors(),
-                        GradientColorPicker.GetPositionColors(),
+                        GradientColorPicker.getValueColors(),
+                        GradientColorPicker.getPositionColors(),
                         Shader.TileMode.REPEAT);
                 return lg;
             }
@@ -36,7 +36,7 @@ class GradientColorPicker {
         colorPickerLayout.setBackground(paint);
     }
 
-    static int[] GetValueColors() {
+    private static int[] getValueColors() {
         int[] valuesColors = new int[countColors];
         for (int i = 0; i < countColors; i++) {
             float[] pixelHSV = new float[3];
@@ -50,7 +50,7 @@ class GradientColorPicker {
         return valuesColors;
     }
 
-    protected static float[] GetPositionColors() {
+    private static float[] getPositionColors() {
         float[] positionColors = new float[countColors];
         for (int i = 0; i < countColors; i++) {
             positionColors[i] = i / 30f ;

@@ -23,25 +23,33 @@ public class CreateNoteActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private Boolean inEditMode = false;
     private int idItem = 0;
+    private ImageView colorView;
+    private EditText nameEditText;
+    private EditText descriptionEditText;
+    private final String CHOOSE_COLOR = "chooseColor";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_note);
         dbHelper = new DatabaseHelper(this);
+        nameEditText = (EditText) findViewById(R.id.editTextName);
+        descriptionEditText = (EditText) findViewById(R.id.editTextDescr);
+        colorView = (ImageView) findViewById(R.id.chooseColorEdit);
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
         if (id != -1) {
             inEditMode = true;
             idItem = id;
-            SetOptions(id);
+            setOptions(id);
 
             return;
         }
 
         int color = Color.RED;
-        CreateChooseColorView(color);
+        createChooseColorView(color);
     }
 
     @Override
@@ -52,31 +60,28 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         int color = data.getIntExtra("color", Color.RED);
-        CreateChooseColorView(color);
+        createChooseColorView(color);
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
-
-        savedInstanceState.putInt("chooseColor", (int) colorView.getTag());
+        savedInstanceState.putInt(CHOOSE_COLOR, (int) colorView.getTag());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        int color = savedInstanceState.getInt("chooseColor");
-        CreateChooseColorView(color);
+        int color = savedInstanceState.getInt(CHOOSE_COLOR);
+        createChooseColorView(color);
     }
 
-    public void CreateChooseColorView(int color) {
-        ImageView colorView = (ImageView) findViewById(R.id.chooseColorEdit);
+    private void createChooseColorView(int color) {
         colorView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GoChooseColor();
+                goChooseColor();
             }
         });
         Drawable drawable = getResources().getDrawable(R.drawable.circle);
@@ -86,20 +91,18 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
 
-    public void SetOptions(int id) {
+    private void setOptions(int id) {
         db = dbHelper.getReadableDatabase();
 
         Cursor notesCursor = db.rawQuery("select * from " + DatabaseHelper.TABLE + " where " +
                 DatabaseHelper.COLUMN_ID + "=?", new String[]{String.valueOf(id)});
         notesCursor.moveToFirst();
 
-        EditText nameEditText = (EditText) findViewById(R.id.editTextName);
-        EditText descriptionEditText = (EditText) findViewById(R.id.editTextDescr);
         nameEditText.setText(notesCursor.getString(1));
         descriptionEditText.setText(notesCursor.getString(2));
 
         int color = notesCursor.getInt(3);
-        CreateChooseColorView(color);
+        createChooseColorView(color);
         notesCursor.close();
 
     }
@@ -114,20 +117,22 @@ public class CreateNoteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.deleteNote:
-                DeleteNote();
+                deleteNote();
+                finish();
                 return true;
             case R.id.save:
-                SaveData();
+                saveData();
+                finish();
                 return true;
             case R.id.chooseColor:
-                GoChooseColor();
+                goChooseColor();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void DeleteNote() {
+    private void deleteNote() {
         if (inEditMode) {
             db = dbHelper.getWritableDatabase();
             db.delete(DatabaseHelper.TABLE, "_id = ?", new String[]{String.valueOf(idItem)});
@@ -136,23 +141,15 @@ public class CreateNoteActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.deleteChooseNote, Toast.LENGTH_SHORT);
         toast.show();
-
-        GoHome();
     }
 
-    public void GoChooseColor() {
+    private void goChooseColor() {
         Intent intent = new Intent(this, ColorActivity.class);
         startActivityForResult(intent, 1);
     }
 
-    public void GoHome() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
 
-    public void SaveData() {
-        EditText nameEditText = (EditText) findViewById(R.id.editTextName);
-        EditText descriptionEditText = (EditText) findViewById(R.id.editTextDescr);
+    private void saveData() {
         String nameNote = nameEditText.getText().toString();
         String descriptionNote = descriptionEditText.getText().toString();
 
@@ -164,8 +161,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             return;
         }
 
-        ImageView imageViewNote = (ImageView) findViewById(R.id.chooseColorEdit);
-        int colorNote = (Integer) imageViewNote.getTag();
+        int colorNote = (Integer) colorView.getTag();
 
         ContentValues cv = new ContentValues();
         cv.put(DatabaseHelper.COLUMN_NAME, nameNote);
@@ -185,6 +181,5 @@ public class CreateNoteActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.saveNote, Toast.LENGTH_SHORT);
         toast.show();
-        GoHome();
     }
 }

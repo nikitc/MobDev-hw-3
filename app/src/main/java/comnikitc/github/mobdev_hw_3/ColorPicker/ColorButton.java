@@ -21,8 +21,6 @@ public class ColorButton extends Button implements View.OnLongClickListener {
 
     private Boolean inEditMode = false;
 
-
-
     public Boolean getInEditMode() {
         return inEditMode;
     }
@@ -90,7 +88,7 @@ public class ColorButton extends Button implements View.OnLongClickListener {
         super(context, attrs, defStyleAttr);
     }
 
-    public static String GetStringHSVColor(float[] color) {
+    protected static String getStringHSVColor(float[] color) {
         float hue = color[0];
         float saturation = color[1];
         float value = Math.max(0.0f, color[2]);
@@ -98,7 +96,7 @@ public class ColorButton extends Button implements View.OnLongClickListener {
         return String.format("HSV: (%.2f, %.2f, %.2f)", hue, saturation, value);
     }
 
-    public static String GetStringRGBColor(float[] color) {
+    protected static String getStringRGBColor(float[] color) {
         int colorValue = Color.HSVToColor(color);
         int red = Color.red(colorValue);
         int green = Color.green(colorValue);
@@ -114,7 +112,7 @@ public class ColorButton extends Button implements View.OnLongClickListener {
         return false;
     }
 
-    public void DiscardColor() {
+    public void discardColor() {
         this.currentColor = originalColor.clone();
     }
 }

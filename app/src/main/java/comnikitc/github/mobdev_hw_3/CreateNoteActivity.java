@@ -16,6 +16,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import comnikitc.github.mobdev_hw_3.ColorPicker.ColorActivity;
 
 public class CreateNoteActivity extends AppCompatActivity {
@@ -27,6 +30,8 @@ public class CreateNoteActivity extends AppCompatActivity {
     private EditText nameEditText;
     private EditText descriptionEditText;
     private final String CHOOSE_COLOR = "chooseColor";
+    private final String KEY_ID = "id";
+    private final String KEY_COLOR = "color";
 
 
     @Override
@@ -39,7 +44,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         colorView = (ImageView) findViewById(R.id.chooseColorEdit);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", -1);
+        int id = intent.getIntExtra(KEY_ID, -1);
         if (id != -1) {
             inEditMode = true;
             idItem = id;
@@ -50,6 +55,26 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         int color = Color.RED;
         createChooseColorView(color);
+        saveDateView();
+    }
+
+    private void saveDateView() {
+        if (!inEditMode) {
+            return;
+        }
+
+        ContentValues cv = new ContentValues();
+        db = dbHelper.getWritableDatabase();
+
+        Date curDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        String date = simpleDateFormat.format(curDate);
+
+        cv.put(DatabaseHelper.COLUMN_DATE_VIEW, date);
+        db.update(DatabaseHelper.TABLE, cv,
+                DatabaseHelper.COLUMN_ID + "=" + String.valueOf(idItem), null);
+
+        db.close();
     }
 
     @Override
@@ -59,7 +84,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             return;
         }
 
-        int color = data.getIntExtra("color", Color.RED);
+        int color = data.getIntExtra(KEY_COLOR, Color.RED);
         createChooseColorView(color);
     }
 
@@ -109,7 +134,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.create_activity_menu, menu);
         return true;
     }
 
@@ -138,9 +163,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             db.delete(DatabaseHelper.TABLE, "_id = ?", new String[]{String.valueOf(idItem)});
         }
 
-        Toast toast = Toast.makeText(getApplicationContext(),
-                R.string.deleteChooseNote, Toast.LENGTH_SHORT);
-        toast.show();
+        Toast.makeText(getApplicationContext(), R.string.deleteChooseNote, Toast.LENGTH_SHORT).show();
     }
 
     private void goChooseColor() {
@@ -154,32 +177,37 @@ public class CreateNoteActivity extends AppCompatActivity {
         String descriptionNote = descriptionEditText.getText().toString();
 
         if (nameNote.isEmpty() || descriptionNote.isEmpty()) {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    R.string.fillNote, Toast.LENGTH_SHORT);
-            toast.show();
+            Toast.makeText(getApplicationContext(), R.string.fillNote, Toast.LENGTH_SHORT).show();
 
             return;
         }
-
         int colorNote = (Integer) colorView.getTag();
-
         ContentValues cv = new ContentValues();
         cv.put(DatabaseHelper.COLUMN_NAME, nameNote);
         cv.put(DatabaseHelper.COLUMN_DESCR, descriptionNote);
         cv.put(DatabaseHelper.COLUMN_COLOR, colorNote);
 
         db = dbHelper.getWritableDatabase();
+
+
+        Date curDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
         if (inEditMode) {
+            String date = simpleDateFormat.format(curDate);
+
+            cv.put(DatabaseHelper.COLUMN_DATE_EDIT, date);
             db.update(DatabaseHelper.TABLE, cv,
                     DatabaseHelper.COLUMN_ID + "=" + String.valueOf(idItem), null);
         } else {
+            String date = simpleDateFormat.format(curDate);
+            cv.put(DatabaseHelper.COLUMN_DATE_CREATE, date);
+            cv.put(DatabaseHelper.COLUMN_DATE_EDIT, date);
+            cv.put(DatabaseHelper.COLUMN_DATE_VIEW, date);
             db.insert(DatabaseHelper.TABLE, null, cv);
         }
 
         db.close();
-
-        Toast toast = Toast.makeText(getApplicationContext(),
-                R.string.saveNote, Toast.LENGTH_SHORT);
-        toast.show();
+        Toast.makeText(getApplicationContext(), R.string.saveNote, Toast.LENGTH_SHORT).show();
     }
 }

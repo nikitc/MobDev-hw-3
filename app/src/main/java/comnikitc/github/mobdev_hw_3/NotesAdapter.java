@@ -17,6 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Objects;
 
 class NotesAdapter extends BaseAdapter{
 
@@ -24,12 +28,21 @@ class NotesAdapter extends BaseAdapter{
     private ArrayList<NoteModel> listNotes;
     private DatabaseHelper dbHelper;
     private LayoutInflater lInflater;
+    final private String KEY_ID = "id";
 
     NotesAdapter(Context context, DatabaseHelper dbHelper) {
         this.context = context;
         this.dbHelper = dbHelper;
         listNotes = getNotesFromDB();
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public ArrayList<NoteModel> getListNotes() {
+        return this.listNotes;
+    }
+
+    public void setListNotes(ArrayList<NoteModel> listNotes) {
+        this.listNotes = listNotes;
     }
 
     private ArrayList<NoteModel> getNotesFromDB() {
@@ -41,13 +54,13 @@ class NotesAdapter extends BaseAdapter{
 
         if(notesCursor.moveToFirst()) {
             do {
-                NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1), notesCursor.getString(2),
-                        notesCursor.getInt(3));
+                NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1),
+                        notesCursor.getString(2), notesCursor.getInt(3), notesCursor.getString(4),
+                        notesCursor.getString(5), notesCursor.getString(6));
                 list.add(note);
             }
             while (notesCursor.moveToNext());
         }
-
         notesCursor.close();
         db.close();
 
@@ -93,7 +106,7 @@ class NotesAdapter extends BaseAdapter{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);
-                intent.putExtra("id", currentNote.getId());
+                intent.putExtra(KEY_ID, currentNote.getId());
                 context.startActivity(intent);
             }
         });

@@ -6,14 +6,46 @@ class NoteModel {
     private String text;
     private int color;
     private int id;
+    private String dateCreate;
+    private String dateEdit;
+    private String dateView;
 
-    NoteModel(int id, String name, String text, int color) {
+    NoteModel(int id, String name, String text, int color,
+              String dateCreate, String dateEdit, String dateView) {
         this.name = name;
         this.text = text;
         this.color = color;
         this.id = id;
+        this.dateCreate = dateCreate;
+        this.dateEdit = dateEdit;
+        this.dateView = dateView;
     }
 
+
+
+    public String getDateView() {
+        return dateView;
+    }
+
+    public void setDateView(String dateView) {
+        this.dateView = dateView;
+    }
+
+    public String getDateEdit() {
+        return dateEdit;
+    }
+
+    public void setDateEdit(String dateEdit) {
+        this.dateEdit = dateEdit;
+    }
+
+    public String getDateCreate() {
+        return dateCreate;
+    }
+
+    public void setDateCreate(String dateCreate) {
+        this.dateCreate = dateCreate;
+    }
 
     public int getId() {
         return id;

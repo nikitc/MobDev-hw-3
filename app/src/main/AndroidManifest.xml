@@ -18,7 +18,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".CreateNoteActivity" />
-        <activity android:name=".ColorPicker.ColorActivity"></activity>
+        <activity android:name=".ColorPicker.ColorActivity" />
+        <activity android:name=".SortActivity" />
+        <activity android:name=".FilterActivity"></activity>
     </application>
 
 </manifest>

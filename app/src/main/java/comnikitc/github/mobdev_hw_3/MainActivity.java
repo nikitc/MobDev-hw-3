@@ -1,11 +1,13 @@
 package comnikitc.github.mobdev_hw_3;
 
-import android.content.ContentValues;
+
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +27,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
+    static final private int ADD_NOTE = 2;
+
     private ArrayList<NoteModel> listNotes;
     static final private String FILENAME = "itemlist.ili";
     private SettingsNotes settings = new SettingsNotes();
@@ -48,15 +52,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
 
-        if (requestCode == SORT_RULE && data != null) {
+        if (requestCode == SORT_RULE) {
             String order = data.getStringExtra(KEY_ORDER);
             String rule = data.getStringExtra(KEY_RULE);
             settings.setRule(rule);
             settings.setOrder(order);
         }
 
-        if (requestCode == FILTER_RULE && data != null) {
+        if (requestCode == FILTER_RULE) {
             String filter = data.getStringExtra(KEY_FILTER);
             String dateFull = data.getStringExtra(KEY_DATE);
             settings.setFilter(filter);
@@ -102,7 +109,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
+        createSearchView(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void createSearchView(Menu menu) {
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<NoteModel> searchListNotes = new ArrayList<NoteModel>();
+
+                for (NoteModel note: listNotes) {
+                    if (isHasStr(note, newText)) {
+                        searchListNotes.add(note);
+                    }
+                }
+                final ListView notesList = (ListView) findViewById(R.id.notesListView);
+                final NotesAdapter notesAdapter = new NotesAdapter(getApplicationContext(),
+                        searchListNotes);
+                notesAdapter.setListNotes(searchListNotes);
+                notesList.setAdapter(notesAdapter);
+
+                return true;
+            }
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            Boolean isHasStr(NoteModel note, String searchText) {
+                return note.getName().toLowerCase().contains(searchText.toLowerCase()) ||
+                        note.getText().toLowerCase().contains(searchText.toLowerCase());
+            }
+        });
+
     }
 
     @Override
@@ -123,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 readFile();
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -131,14 +175,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.addNoteFab:
                 Intent intent = new Intent(this, CreateNoteActivity.class);
-                startActivityForResult(intent, 2);
+                startActivityForResult(intent, ADD_NOTE);
                 break;
         }
     }
 
     public void saveNotesToFile()  {
         try {
-            String content = JSONHelper.toJson(listNotes); 
+            String content = JSONHelper.toJson(listNotes);
             File file = new File(getFilesDir() + "/" + FILENAME);
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
@@ -162,29 +206,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             br.close();
 
             ArrayList<NoteModel> notes = JSONHelper.fromJson(result);
-
             DatabaseHelper dbHelper = new DatabaseHelper(this);
             SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-            for (int i = 0; i < notes.size(); i++) {
-                NoteModel currentNote = notes.get(i);
-                ContentValues cv = new ContentValues();
-                cv.put(DatabaseHelper.COLUMN_NAME, currentNote.getName());
-                cv.put(DatabaseHelper.COLUMN_DESCR, currentNote.getText());
-                cv.put(DatabaseHelper.COLUMN_COLOR, currentNote.getColor());
-                cv.put(DatabaseHelper.COLUMN_DATE_CREATE, currentNote.getDateCreate());
-                cv.put(DatabaseHelper.COLUMN_DATE_EDIT, currentNote.getDateEdit());
-                cv.put(DatabaseHelper.COLUMN_DATE_VIEW, currentNote.getDateView());
-                db.insert(DatabaseHelper.TABLE, null, cv);
+            for (NoteModel note: notes) {
+                DatabaseHelper.addNoteToDataBase(db, note);
             }
-
             Toast.makeText(getApplicationContext(), R.string.notes_import,
                     Toast.LENGTH_SHORT).show();
             createListView();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

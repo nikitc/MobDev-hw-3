@@ -17,10 +17,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateNoteActivity" />
+        <activity android:name=".CreateNoteActivity"/>
         <activity android:name=".ColorPicker.ColorActivity" />
         <activity android:name=".SortActivity" />
-        <activity android:name=".FilterActivity"></activity>
+        <activity android:name=".FilterActivity"/>
     </application>
 
 </manifest>

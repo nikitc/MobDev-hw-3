@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,13 +109,13 @@ public class FilterActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.saveSettingsSort:
                 Intent answerIntent = new Intent();
                 answerIntent.putExtra(keyFilter, filter);
                 answerIntent.putExtra(keyDate, date);
                 setResult(RESULT_OK, answerIntent);
+                Toast.makeText(getApplicationContext(), R.string.filter_on, Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
         }

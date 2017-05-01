@@ -2,6 +2,7 @@ package comnikitc.github.mobdev_hw_3;
 
 
 
+import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -28,12 +29,12 @@ class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE notes (" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_DESCR + " TEXT, " +
-                COLUMN_COLOR + " INTEGER," +
-                COLUMN_DATE_CREATE + " INTEGER," +
-                COLUMN_DATE_EDIT + " INTEGER," +
+                COLUMN_COLOR + " INTEGER, " +
+                COLUMN_DATE_CREATE + " INTEGER, " +
+                COLUMN_DATE_EDIT + " INTEGER, " +
                 COLUMN_DATE_VIEW + " INTEGER" +");");
     }
 
@@ -42,5 +43,16 @@ class DatabaseHelper extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE);
         onCreate(db);
+    }
+
+    static void addNoteToDataBase(SQLiteDatabase db, NoteModel note) {
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseHelper.COLUMN_NAME, note.getName());
+        cv.put(DatabaseHelper.COLUMN_DESCR, note.getText());
+        cv.put(DatabaseHelper.COLUMN_COLOR, note.getColor());
+        cv.put(DatabaseHelper.COLUMN_DATE_CREATE, note.getDateCreate());
+        cv.put(DatabaseHelper.COLUMN_DATE_EDIT, note.getDateEdit());
+        cv.put(DatabaseHelper.COLUMN_DATE_VIEW, note.getDateView());
+        db.insert(DatabaseHelper.TABLE, null, cv);
     }
 }

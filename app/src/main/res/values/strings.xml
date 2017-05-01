@@ -28,4 +28,6 @@
     <string name="choose_date">Выбрать дату</string>
     <string name="notes_export">Заметки экспортированы</string>
     <string name="notes_import">Заметки импортировны</string>
+    <string name="search">Поиск</string>
+    <string name="filter_on">Заметки отфильтрованы</string>
 </resources>

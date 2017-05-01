@@ -9,8 +9,16 @@ import android.view.View;
 import android.widget.RadioButton;
 
 public class SortActivity extends AppCompatActivity {
-    private String order = "create";
-    private String rule = "asc";
+    private final String ORDER_ASC = "asc";
+    private final String ORDER_DESC = "desc";
+    private final String RULE_NAME = "name";
+    private final String RULE_CREATE = "create";
+    private final String RULE_EDIT = "edit";
+    private final String RULE_VIEW = "view";
+
+
+    public static String order = "create";
+    public static String rule = "asc";
     private final String KEY_ORDER = "order";
     private final String KEY_RULE = "rule";
 
@@ -25,6 +33,39 @@ public class SortActivity extends AppCompatActivity {
         findViewById(R.id.dateCreateRadio).setOnClickListener(radioButtonListener);
         findViewById(R.id.dateEditRadio).setOnClickListener(radioButtonListener);
         findViewById(R.id.dateViewRadio).setOnClickListener(radioButtonListener);
+        setCheckedRadio();
+    }
+
+    private void setCheckedRadio() {
+        switch (rule) {
+            case RULE_NAME:
+                RadioButton buttonName = (RadioButton) findViewById(R.id.nameRadio);
+                buttonName.setChecked(true);
+                break;
+            case RULE_CREATE:
+                RadioButton buttonCreate = (RadioButton) findViewById(R.id.dateCreateRadio);
+                buttonCreate.setChecked(true);
+                break;
+            case RULE_EDIT:
+                RadioButton buttonEdit = (RadioButton) findViewById(R.id.dateEditRadio);
+                buttonEdit.setChecked(true);
+                break;
+            case RULE_VIEW:
+                RadioButton buttonView = (RadioButton) findViewById(R.id.dateViewRadio);
+                buttonView.setChecked(true);
+                break;
+        }
+
+        switch (order) {
+            case ORDER_ASC:
+                RadioButton buttonAsc = (RadioButton) findViewById(R.id.ascRadio);
+                buttonAsc.setChecked(true);
+                break;
+            case ORDER_DESC:
+                RadioButton buttonDesc = (RadioButton) findViewById(R.id.descRadio);
+                buttonDesc.setChecked(true);
+                break;
+        }
     }
 
     @Override
@@ -54,22 +95,22 @@ public class SortActivity extends AppCompatActivity {
             RadioButton rb = (RadioButton) view;
             switch (rb.getId()) {
                 case R.id.ascRadio:
-                    order = "asc";
+                    order = ORDER_ASC;
                     break;
                 case R.id.descRadio:
-                    order = "desc";
+                    order = ORDER_DESC;
                     break;
                 case R.id.nameRadio:
-                    rule = "name";
+                    rule = RULE_NAME;
                     break;
                 case R.id.dateCreateRadio:
-                    rule = "create";
+                    rule = RULE_CREATE;
                     break;
                 case R.id.dateEditRadio:
-                    rule = "edit";
+                    rule = RULE_EDIT;
                     break;
                 case R.id.dateViewRadio:
-                    rule = "view";
+                    rule = RULE_VIEW;
                     break;
             }
         }

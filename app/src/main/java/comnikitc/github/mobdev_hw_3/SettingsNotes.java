@@ -10,6 +10,15 @@ import java.util.Date;
 import java.util.Objects;
 
 class SettingsNotes {
+    private final String NAME_SORT = "name";
+    private final String CREATE_SORT = "create";
+    private final String EDIT_SORT = "edit";
+    private final String VIEW_SORT = "view";
+    private final String DATE_CREATE_FILTER = "dateCreate";
+    private final String DATE_EDIT_FILTER = "dateEdit";
+    private final String DATE_VIEW_FILTER = "dateView";
+    private final String FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ss";
+    private final String FORMAT_SIMPLE = "dd.MM.yyyy";
 
     private String rule = "create";
     private String order = "asc";
@@ -23,13 +32,13 @@ class SettingsNotes {
             @Override
             public int compare(NoteModel note1, NoteModel note2) {
                 switch (rule) {
-                    case "name":
+                    case NAME_SORT:
                         return note1.getName().compareTo(note2.getName());
-                    case "create":
+                    case CREATE_SORT:
                         return note1.getDateCreate().compareTo(note2.getDateCreate());
-                    case "edit":
+                    case EDIT_SORT:
                         return note1.getDateEdit().compareTo(note2.getDateEdit());
-                    case "view":
+                    case VIEW_SORT:
                         return note1.getDateView().compareTo(note2.getDateView());
                 }
                 return 0;
@@ -51,17 +60,17 @@ class SettingsNotes {
         for (int i = 0; i < listNotes.size(); i++) {
             NoteModel currentNote = listNotes.get(i);
             switch (filter) {
-                case "dateCreate":
+                case DATE_CREATE_FILTER:
                     if (translateToDate(currentNote.getDateCreate()).equals(dateFull)) {
                         newListNotes.add(currentNote);
                     }
                     break;
-                case "dateEdit":
+                case DATE_EDIT_FILTER:
                     if (translateToDate(currentNote.getDateEdit()).equals(dateFull)) {
                         newListNotes.add(currentNote);
                     }
                     break;
-                case "dateView":
+                case DATE_VIEW_FILTER:
                     if (translateToDate(currentNote.getDateView()).equals(dateFull)) {
                         newListNotes.add(currentNote);
                     }
@@ -78,8 +87,8 @@ class SettingsNotes {
     }
 
     private String translateToDate(String dateISO) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_ISO);
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_SIMPLE);
 
         String dateAsString = "";
         try {

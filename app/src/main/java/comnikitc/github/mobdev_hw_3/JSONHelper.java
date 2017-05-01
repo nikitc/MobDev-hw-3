@@ -1,5 +1,7 @@
 package comnikitc.github.mobdev_hw_3;
 
+import android.graphics.Color;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,6 +9,12 @@ import java.util.ArrayList;
 
 class JSONHelper {
 
+    private static final String TITLE = "title";
+    private static final String DESCRIPTION = "description";
+    private static final String COLOR = "color";
+    private static final String CREATED = "created";
+    private static final String EDITED = "edited";
+    private static final String VIEWED = "viewed";
 
     static String toJson(ArrayList<NoteModel> listNotes) {
         JSONArray jsonArray = new JSONArray();
@@ -37,12 +45,12 @@ class JSONHelper {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                String title = jsonObject.getString("title");
-                String description = jsonObject.getString("description");
-                Integer color = jsonObject.getInt("color");
-                String dateCreate = jsonObject.getString("created");
-                String dateEdit = jsonObject.getString("edited");
-                String dateView = jsonObject.getString("viewed");
+                String title = jsonObject.getString(TITLE);
+                String description = jsonObject.getString(DESCRIPTION);
+                Integer color = jsonObject.getInt(COLOR);
+                String dateCreate = jsonObject.getString(CREATED);
+                String dateEdit = jsonObject.getString(EDITED);
+                String dateView = jsonObject.getString(VIEWED);
 
                 NoteModel note = new NoteModel(i, title, description, color,
                         dateCreate, dateEdit, dateView);

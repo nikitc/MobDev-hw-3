@@ -9,8 +9,13 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,7 +37,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     private final String CHOOSE_COLOR = "chooseColor";
     private final String KEY_ID = "id";
     private final String KEY_COLOR = "color";
-
+    private final String FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ss";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,20 +47,20 @@ public class CreateNoteActivity extends AppCompatActivity {
         nameEditText = (EditText) findViewById(R.id.editTextName);
         descriptionEditText = (EditText) findViewById(R.id.editTextDescr);
         colorView = (ImageView) findViewById(R.id.chooseColorEdit);
-
         Intent intent = getIntent();
         int id = intent.getIntExtra(KEY_ID, -1);
         if (id != -1) {
             inEditMode = true;
             idItem = id;
             setOptions(id);
+            saveDateView();
 
             return;
         }
 
         int color = Color.RED;
         createChooseColorView(color);
-        saveDateView();
+
     }
 
     private void saveDateView() {
@@ -67,7 +72,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         db = dbHelper.getWritableDatabase();
 
         Date curDate = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_ISO);
         String date = simpleDateFormat.format(curDate);
 
         cv.put(DatabaseHelper.COLUMN_DATE_VIEW, date);
@@ -114,7 +119,6 @@ public class CreateNoteActivity extends AppCompatActivity {
         colorView.setBackground(drawable);
         colorView.setTag(color);
     }
-
 
     private void setOptions(int id) {
         db = dbHelper.getReadableDatabase();
@@ -188,10 +192,8 @@ public class CreateNoteActivity extends AppCompatActivity {
         cv.put(DatabaseHelper.COLUMN_COLOR, colorNote);
 
         db = dbHelper.getWritableDatabase();
-
-
         Date curDate = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_ISO);
 
         if (inEditMode) {
             String date = simpleDateFormat.format(curDate);

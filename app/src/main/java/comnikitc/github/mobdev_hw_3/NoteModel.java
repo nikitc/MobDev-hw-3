@@ -21,8 +21,6 @@ class NoteModel {
         this.dateView = dateView;
     }
 
-
-
     public String getDateView() {
         return dateView;
     }
@@ -78,5 +76,4 @@ class NoteModel {
     public void setColor(int color) {
         this.color = color;
     }
-
 }

@@ -37,6 +37,12 @@ class NotesAdapter extends BaseAdapter{
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    NotesAdapter(Context context, ArrayList<NoteModel> listNotes) {
+        this.context = context;
+        this.listNotes = listNotes;
+        lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
     public ArrayList<NoteModel> getListNotes() {
         return this.listNotes;
     }
@@ -79,7 +85,9 @@ class NotesAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-        return position;
+
+        return listNotes.get(position).getId();
+        //return position;
     }
 
 
@@ -107,6 +115,7 @@ class NotesAdapter extends BaseAdapter{
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);
                 intent.putExtra(KEY_ID, currentNote.getId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
         });

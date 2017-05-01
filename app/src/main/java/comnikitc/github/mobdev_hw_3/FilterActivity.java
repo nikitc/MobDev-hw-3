@@ -19,12 +19,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class FilterActivity extends AppCompatActivity {
-
     private String date = "";
     private EditText dateText;
     private String filter = "none";
-    private final String keyFilter = "filter";
-    private final String keyDate = "date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +53,14 @@ public class FilterActivity extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        date = GetDate(year, monthOfYear + 1, dayOfMonth);
+                        date = getDate(year, monthOfYear + 1, dayOfMonth);
                         dateText.setText(date);
                     }
                 }, mYear, mMonth, mDay);
         datePickerDialog.show();
     }
 
-    public String GetDate(int year, int monthOfYear, int dayOfMonth) {
+    public String getDate(int year, int monthOfYear, int dayOfMonth) {
         String days = "";
         String months = "";
 
@@ -112,8 +109,8 @@ public class FilterActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.saveSettingsSort:
                 Intent answerIntent = new Intent();
-                answerIntent.putExtra(keyFilter, filter);
-                answerIntent.putExtra(keyDate, date);
+                answerIntent.putExtra(Constants.KEY_FILTER, filter);
+                answerIntent.putExtra(Constants.KEY_DATE, date);
                 setResult(RESULT_OK, answerIntent);
                 Toast.makeText(getApplicationContext(), R.string.filter_on, Toast.LENGTH_SHORT).show();
                 finish();

@@ -2,12 +2,12 @@ package comnikitc.github.mobdev_hw_3;
 
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,14 +28,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
+    static final private int READ_FILE = 3;
+    static final private int WRITE_FILE = 4;
 
     private ArrayList<NoteModel> listNotes;
+    private DatabaseHelper dbHelper;
     static final private String FILENAME = "itemlist.ili";
     private SettingsNotes settings = new SettingsNotes();
-    final private String KEY_ORDER = "order";
-    final private String KEY_RULE = "rule";
-    final private String KEY_FILTER = "filter";
-    final private String KEY_DATE = "date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,26 +56,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (requestCode == SORT_RULE) {
-            String order = data.getStringExtra(KEY_ORDER);
-            String rule = data.getStringExtra(KEY_RULE);
+            String order = data.getStringExtra(Constants.KEY_ORDER);
+            String rule = data.getStringExtra(Constants.KEY_RULE);
             settings.setRule(rule);
             settings.setOrder(order);
         }
 
         if (requestCode == FILTER_RULE) {
-            String filter = data.getStringExtra(KEY_FILTER);
-            String dateFull = data.getStringExtra(KEY_DATE);
+            String filter = data.getStringExtra(Constants.KEY_FILTER);
+            String dateFull = data.getStringExtra(Constants.KEY_DATE);
             settings.setFilter(filter);
             settings.setDateFull(dateFull);
+        }
+
+        if (requestCode == READ_FILE) {
+            String filePath = data.getData().getPath();
+            readFile(filePath);
+        }
+
+        if (requestCode == WRITE_FILE) {
+            String filePath = data.getData().getPath();
+            saveNotesToFile(filePath);
         }
     }
 
     private void createListView() {
         setContentView(R.layout.activity_main);
-        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        dbHelper = new DatabaseHelper(this);
         final ListView notesList = (ListView) findViewById(R.id.notesListView);
 
-        final NotesAdapter notesAdapter = new NotesAdapter(this, databaseHelper);
+        final NotesAdapter notesAdapter = new NotesAdapter(this, dbHelper);
         notesAdapter.setListNotes(settings.setSettingListNotes(notesAdapter.getListNotes()));
         listNotes = notesAdapter.getListNotes();
         notesList.setAdapter(notesAdapter);
@@ -116,12 +125,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void createSearchView(Menu menu) {
         MenuItem searchItem = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
                 ArrayList<NoteModel> searchListNotes = new ArrayList<NoteModel>();
-
                 for (NoteModel note: listNotes) {
                     if (isHasStr(note, newText)) {
                         searchListNotes.add(note);
@@ -135,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 return true;
             }
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -160,10 +168,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intentFilter, FILTER_RULE);
                 return true;
             case R.id.upload:
-                saveNotesToFile();
+                getFile(WRITE_FILE);
                 return true;
             case R.id.download:
-                readFile();
+                getFile(READ_FILE);
                 return true;
         }
 
@@ -180,10 +188,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void saveNotesToFile()  {
+    public void saveNotesToFile(String filename)  {
         try {
             String content = JSONHelper.toJson(listNotes);
-            File file = new File(getFilesDir() + "/" + FILENAME);
+            File file = new File(filename);
+            Log.d("file", file.toString());
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();
@@ -194,24 +203,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void readFile() {
+    public void getFile(int code) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        startActivityForResult(intent, code);
+    }
+
+    public void readFile(String filename) {
         try {
             String result = "";
-            File file = new File(getFilesDir(), FILENAME);
+            File file = new File(filename);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {
                 result += line;
             }
             br.close();
-
             ArrayList<NoteModel> notes = JSONHelper.fromJson(result);
-            DatabaseHelper dbHelper = new DatabaseHelper(this);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            dbHelper.addNotesToDataBase(notes);
 
-            for (NoteModel note: notes) {
-                DatabaseHelper.addNoteToDataBase(db, note);
-            }
             Toast.makeText(getApplicationContext(), R.string.notes_import,
                     Toast.LENGTH_SHORT).show();
             createListView();

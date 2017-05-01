@@ -23,17 +23,14 @@ import java.util.Comparator;
 import java.util.Objects;
 
 class NotesAdapter extends BaseAdapter{
-
     private final Context context;
     private ArrayList<NoteModel> listNotes;
-    private DatabaseHelper dbHelper;
     private LayoutInflater lInflater;
     final private String KEY_ID = "id";
 
     NotesAdapter(Context context, DatabaseHelper dbHelper) {
         this.context = context;
-        this.dbHelper = dbHelper;
-        listNotes = getNotesFromDB();
+        listNotes = dbHelper.getNotesFromDB();
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -43,34 +40,12 @@ class NotesAdapter extends BaseAdapter{
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public ArrayList<NoteModel> getListNotes() {
+    ArrayList<NoteModel> getListNotes() {
         return this.listNotes;
     }
 
-    public void setListNotes(ArrayList<NoteModel> listNotes) {
+    void setListNotes(ArrayList<NoteModel> listNotes) {
         this.listNotes = listNotes;
-    }
-
-    private ArrayList<NoteModel> getNotesFromDB() {
-        ArrayList<NoteModel> list = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        Cursor notesCursor = db.rawQuery("select * from " + DatabaseHelper.TABLE, null);
-        notesCursor.moveToFirst();
-
-        if(notesCursor.moveToFirst()) {
-            do {
-                NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1),
-                        notesCursor.getString(2), notesCursor.getInt(3), notesCursor.getString(4),
-                        notesCursor.getString(5), notesCursor.getString(6));
-                list.add(note);
-            }
-            while (notesCursor.moveToNext());
-        }
-        notesCursor.close();
-        db.close();
-
-        return list;
     }
 
     @Override
@@ -85,9 +60,7 @@ class NotesAdapter extends BaseAdapter{
 
     @Override
     public long getItemId(int position) {
-
-        return listNotes.get(position).getId();
-        //return position;
+        return position;
     }
 
 

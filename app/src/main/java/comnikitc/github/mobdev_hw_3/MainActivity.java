@@ -2,12 +2,12 @@ package comnikitc.github.mobdev_hw_3;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,12 +28,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
-    static final private int READ_FILE = 3;
-    static final private int WRITE_FILE = 4;
 
+
+    private final String FILENAME = "itemlist.ili";
     private ArrayList<NoteModel> listNotes;
     private DatabaseHelper dbHelper;
-    static final private String FILENAME = "itemlist.ili";
     private SettingsNotes settings = new SettingsNotes();
 
     @Override
@@ -54,29 +53,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (data == null) {
             return;
         }
-
-        if (requestCode == SORT_RULE) {
-            String order = data.getStringExtra(Constants.KEY_ORDER);
-            String rule = data.getStringExtra(Constants.KEY_RULE);
-            settings.setRule(rule);
-            settings.setOrder(order);
-        }
-
-        if (requestCode == FILTER_RULE) {
-            String filter = data.getStringExtra(Constants.KEY_FILTER);
-            String dateFull = data.getStringExtra(Constants.KEY_DATE);
-            settings.setFilter(filter);
-            settings.setDateFull(dateFull);
-        }
-
-        if (requestCode == READ_FILE) {
-            String filePath = data.getData().getPath();
-            readFile(filePath);
-        }
-
-        if (requestCode == WRITE_FILE) {
-            String filePath = data.getData().getPath();
-            saveNotesToFile(filePath);
+        switch (requestCode) {
+            case SORT_RULE:
+                String order = data.getStringExtra(Constants.KEY_ORDER);
+                String rule = data.getStringExtra(Constants.KEY_RULE);
+                settings.setRule(rule);
+                settings.setOrder(order);
+                break;
+            case FILTER_RULE:
+                String filter = data.getStringExtra(Constants.KEY_FILTER);
+                String dateFull = data.getStringExtra(Constants.KEY_DATE);
+                settings.setFilter(filter);
+                settings.setDateFull(dateFull);
+                break;
         }
     }
 
@@ -168,10 +157,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intentFilter, FILTER_RULE);
                 return true;
             case R.id.upload:
-                getFile(WRITE_FILE);
+                saveNotesToFile(FILENAME);
                 return true;
             case R.id.download:
-                getFile(READ_FILE);
+                readFile(FILENAME);
                 return true;
         }
 
@@ -191,8 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void saveNotesToFile(String filename)  {
         try {
             String content = JSONHelper.toJson(listNotes);
-            File file = new File(filename);
-            Log.d("file", file.toString());
+            File file = new File(getFilesDir() + "/" + filename);
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();
@@ -203,16 +191,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void getFile(int code) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        startActivityForResult(intent, code);
-    }
-
     public void readFile(String filename) {
         try {
             String result = "";
-            File file = new File(filename);
+            File file = new File(getFilesDir(), filename);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             while ((line = br.readLine()) != null) {

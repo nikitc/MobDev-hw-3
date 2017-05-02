@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 saveNotesToFile(FILENAME);
                 return true;
             case R.id.download:
-                readFile(FILENAME);
+                readNotesFromFile(FILENAME);
                 return true;
         }
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void saveNotesToFile(String filename)  {
         try {
             String content = JSONHelper.toJson(listNotes);
-            File file = new File(getFilesDir() + "/" + filename);
+            File file = new File(getFilesDir(), filename);
             Writer writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void readFile(String filename) {
+    public void readNotesFromFile(String filename) {
         try {
             String result = "";
             File file = new File(getFilesDir(), filename);

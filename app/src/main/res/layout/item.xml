@@ -44,11 +44,4 @@
             android:textColor="@color/colorDescription" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:id="@+id/editButton"
-        android:background="@drawable/ic_mode_edit_black_24dp"
-        android:layout_marginRight="@dimen/item_side_margin" />
-
 </LinearLayout>

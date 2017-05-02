@@ -11,4 +11,23 @@
     <string name="finishEdit">Конец выбора</string>
     <string name="deleteNote">Удалить заметку</string>
     <string name="deleteChooseNote">Заметка удалена</string>
+    <string name="sort">Сортировка</string>
+    <string name="filter">Фильтр</string>
+    <string name="upload">Экспорт</string>
+    <string name="download">Импорт</string>
+    <string name="dateCreate">Дате создания</string>
+    <string name="dateEdit">Дате редактирования</string>
+    <string name="dateView">Дате просмотра</string>
+    <string name="asc">По возрастанию</string>
+    <string name="desc">По убыванию</string>
+    <string name="nameSort">Имени</string>
+    <string name="order">Порядок:</string>
+    <string name="rule">Сортировать по:</string>
+    <string name="filter_by">Фильтровать по:</string>
+    <string name="no_filter">Не фильтровать</string>
+    <string name="choose_date">Выбрать дату</string>
+    <string name="notes_export">Заметки экспортированы</string>
+    <string name="notes_import">Заметки импортировны</string>
+    <string name="search">Поиск</string>
+    <string name="filter_on">Заметки отфильтрованы</string>
 </resources>

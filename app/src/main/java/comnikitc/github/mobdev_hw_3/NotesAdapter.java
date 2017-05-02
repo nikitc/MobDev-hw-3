@@ -17,41 +17,35 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Objects;
 
 class NotesAdapter extends BaseAdapter{
-
     private final Context context;
     private ArrayList<NoteModel> listNotes;
-    private DatabaseHelper dbHelper;
     private LayoutInflater lInflater;
+    final private String KEY_ID = "id";
 
     NotesAdapter(Context context, DatabaseHelper dbHelper) {
         this.context = context;
-        this.dbHelper = dbHelper;
-        listNotes = getNotesFromDB();
+        listNotes = dbHelper.getNotesFromDB();
         lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    private ArrayList<NoteModel> getNotesFromDB() {
-        ArrayList<NoteModel> list = new ArrayList<>();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+    NotesAdapter(Context context, ArrayList<NoteModel> listNotes) {
+        this.context = context;
+        this.listNotes = listNotes;
+        lInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
 
-        Cursor notesCursor = db.rawQuery("select * from " + DatabaseHelper.TABLE, null);
-        notesCursor.moveToFirst();
+    ArrayList<NoteModel> getListNotes() {
+        return this.listNotes;
+    }
 
-        if(notesCursor.moveToFirst()) {
-            do {
-                NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1), notesCursor.getString(2),
-                        notesCursor.getInt(3));
-                list.add(note);
-            }
-            while (notesCursor.moveToNext());
-        }
-
-        notesCursor.close();
-        db.close();
-
-        return list;
+    void setListNotes(ArrayList<NoteModel> listNotes) {
+        this.listNotes = listNotes;
     }
 
     @Override
@@ -93,7 +87,8 @@ class NotesAdapter extends BaseAdapter{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);
-                intent.putExtra("id", currentNote.getId());
+                intent.putExtra(KEY_ID, currentNote.getId());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }
         });

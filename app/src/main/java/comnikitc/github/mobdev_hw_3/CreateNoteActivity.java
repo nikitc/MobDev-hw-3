@@ -1,28 +1,20 @@
 package comnikitc.github.mobdev_hw_3;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.squareup.picasso.Picasso;
 
 import comnikitc.github.mobdev_hw_3.ColorPicker.ColorActivity;
 
@@ -33,6 +25,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     private ImageView colorView;
     private EditText nameEditText;
     private EditText descriptionEditText;
+    private EditText imageUrlEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +34,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         nameEditText = (EditText) findViewById(R.id.editTextName);
         descriptionEditText = (EditText) findViewById(R.id.editTextDescr);
+        imageUrlEditText = (EditText) findViewById(R.id.imageLink);
         colorView = (ImageView) findViewById(R.id.chooseColorEdit);
         Intent intent = getIntent();
         int id = intent.getIntExtra(Constants.KEY_ID, -1);
@@ -105,8 +99,17 @@ public class CreateNoteActivity extends AppCompatActivity {
         nameEditText.setText(notesCursor.getString(1));
         descriptionEditText.setText(notesCursor.getString(2));
         int color = notesCursor.getInt(3);
+        String url = notesCursor.getString(4);
+        imageUrlEditText.setText(url);
+        setImageFromUrl(url);
         createChooseColorView(color);
         notesCursor.close();
+    }
+
+    private void setImageFromUrl(String url) {
+        Picasso.with(this)
+                .load(url)
+                .into((ImageView) findViewById(R.id.imageFromLink));
     }
 
     @Override
@@ -119,11 +122,23 @@ public class CreateNoteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.deleteNote:
-                deleteNote();
+                Thread deleteNoteThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        deleteNote();
+                    }
+                });
+                deleteNoteThread.start();
                 finish();
                 return true;
             case R.id.save:
-                saveData();
+                Thread saveNoteThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        saveData();
+                    }
+                });
+                saveNoteThread.start();
                 finish();
                 return true;
             case R.id.chooseColor:
@@ -138,8 +153,13 @@ public class CreateNoteActivity extends AppCompatActivity {
         if (inEditMode) {
             dbHelper.deleteNoteFromDB(idItem);
         }
-
-        Toast.makeText(getApplicationContext(), R.string.deleteChooseNote, Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(),
+                        R.string.deleteChooseNote, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void goChooseColor() {
@@ -150,8 +170,15 @@ public class CreateNoteActivity extends AppCompatActivity {
     private void saveData() {
         String nameNote = nameEditText.getText().toString();
         String descriptionNote = descriptionEditText.getText().toString();
+        String imageUrl = imageUrlEditText.getText().toString();
         if (nameNote.isEmpty() || descriptionNote.isEmpty()) {
-            Toast.makeText(getApplicationContext(), R.string.fillNote, Toast.LENGTH_SHORT).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),
+                            R.string.fillNote, Toast.LENGTH_SHORT).show();
+                }
+            });
             return;
         }
 
@@ -159,8 +186,13 @@ public class CreateNoteActivity extends AppCompatActivity {
         if (inEditMode) {
             dbHelper.saveChangeNote(nameNote, descriptionNote, colorNote, idItem);
         } else {
-            dbHelper.saveNewNote(nameNote, descriptionNote, colorNote);
+            dbHelper.saveNewNote(nameNote, descriptionNote, colorNote, imageUrl);
         }
-        Toast.makeText(getApplicationContext(), R.string.saveNote, Toast.LENGTH_SHORT).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), R.string.saveNote, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

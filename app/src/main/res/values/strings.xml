@@ -30,4 +30,7 @@
     <string name="notes_import">Заметки импортировны</string>
     <string name="search">Поиск</string>
     <string name="filter_on">Заметки отфильтрованы</string>
+    <string name="image_link">Ссылка на картинку</string>
+    <string name="add100k">Добавить 100к</string>
+    <string name="http">http://</string>
 </resources>

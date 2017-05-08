@@ -12,6 +12,7 @@ class JSONHelper {
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";
     private static final String COLOR = "color";
+    private static final String IMAGE_URL = "imageUrl";
     private static final String CREATED = "created";
     private static final String EDITED = "edited";
     private static final String VIEWED = "viewed";
@@ -21,13 +22,13 @@ class JSONHelper {
         try {
             for (NoteModel note: listNotes) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("title", note.getName());
-                jsonObject.put("description", note.getText());
-                jsonObject.put("color", note.getColor());
-                jsonObject.put("created", note.getDateCreate());
-                jsonObject.put("edited", note.getDateEdit());
-                jsonObject.put("viewed", note.getDateView());
-
+                jsonObject.put(TITLE, note.getName());
+                jsonObject.put(DESCRIPTION, note.getText());
+                jsonObject.put(COLOR, note.getColor());
+                jsonObject.put(IMAGE_URL, note.getImageUrl());
+                jsonObject.put(CREATED, note.getDateCreate());
+                jsonObject.put(EDITED, note.getDateEdit());
+                jsonObject.put(VIEWED, note.getDateView());
                 jsonArray.put(jsonObject);
             }
         } catch (JSONException e) {
@@ -39,24 +40,22 @@ class JSONHelper {
 
     static ArrayList<NoteModel> fromJson(String json)  {
         ArrayList<NoteModel> listNotes = new ArrayList<NoteModel>();
-
         try {
             JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-
                 String title = jsonObject.getString(TITLE);
                 String description = jsonObject.getString(DESCRIPTION);
                 Integer color = jsonObject.getInt(COLOR);
+                String imageUrl = jsonObject.getString(IMAGE_URL);
                 String dateCreate = jsonObject.getString(CREATED);
                 String dateEdit = jsonObject.getString(EDITED);
                 String dateView = jsonObject.getString(VIEWED);
 
-                NoteModel note = new NoteModel(i, title, description, color,
+                NoteModel note = new NoteModel(i, title, description, color, imageUrl,
                         dateCreate, dateEdit, dateView);
                 listNotes.add(note);
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

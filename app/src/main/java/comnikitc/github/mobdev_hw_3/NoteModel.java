@@ -9,16 +9,26 @@ class NoteModel {
     private String dateCreate;
     private String dateEdit;
     private String dateView;
+    private String imageUrl;
 
-    NoteModel(int id, String name, String text, int color,
+    NoteModel(int id, String name, String text, int color, String imageUrl,
               String dateCreate, String dateEdit, String dateView) {
         this.name = name;
         this.text = text;
         this.color = color;
+        this.imageUrl = imageUrl;
         this.id = id;
         this.dateCreate = dateCreate;
         this.dateEdit = dateEdit;
         this.dateView = dateView;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getDateView() {

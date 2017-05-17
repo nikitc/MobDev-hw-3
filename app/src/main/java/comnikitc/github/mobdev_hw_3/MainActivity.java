@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 createListView();
             }
         });
+        
     }
 
     public void saveNotesToFile(final String filename)  {

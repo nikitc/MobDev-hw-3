@@ -88,6 +88,7 @@ class NotesAdapter extends BaseAdapter{
             public void onClick(View v) {
                 Intent intent = new Intent(context, CreateNoteActivity.class);
                 intent.putExtra(KEY_ID, currentNote.getId());
+                intent.putExtra(Constants.KEY_SERVER_ID, currentNote.getServerNoteId());
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
             }

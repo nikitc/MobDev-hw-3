@@ -24,6 +24,7 @@ class DatabaseHelper extends SQLiteOpenHelper{
     static final String COLUMN_DATE_CREATE = "date_create";
     static final String COLUMN_DATE_EDIT = "date_edit";
     static final String COLUMN_DATE_VIEW = "date_view";
+    static final String COLUMN_SERVER_ID = "server_id";
 
     DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, SCHEMA);
@@ -37,9 +38,10 @@ class DatabaseHelper extends SQLiteOpenHelper{
                 COLUMN_DESCR + " TEXT, " +
                 COLUMN_COLOR + " INTEGER, " +
                 COLUMN_IMAGE_URL + " TEXT, " +
-                COLUMN_DATE_CREATE + " INTEGER, " +
-                COLUMN_DATE_EDIT + " INTEGER, " +
-                COLUMN_DATE_VIEW + " INTEGER" +");");
+                COLUMN_DATE_CREATE + " TEXT, " +
+                COLUMN_DATE_EDIT + " TEXT, " +
+                COLUMN_DATE_VIEW + " TEXT, " +
+                COLUMN_SERVER_ID + " INTEGER" + ");");
     }
 
     @Override
@@ -59,6 +61,7 @@ class DatabaseHelper extends SQLiteOpenHelper{
             cv.put(DatabaseHelper.COLUMN_DATE_CREATE, note.getDateCreate());
             cv.put(DatabaseHelper.COLUMN_DATE_EDIT, note.getDateEdit());
             cv.put(DatabaseHelper.COLUMN_DATE_VIEW, note.getDateView());
+            cv.put(DatabaseHelper.COLUMN_SERVER_ID, note.getServerNoteId());
             db.insert(DatabaseHelper.TABLE, null, cv);
         }
     }
@@ -72,7 +75,8 @@ class DatabaseHelper extends SQLiteOpenHelper{
             do {
                 NoteModel note = new NoteModel(notesCursor.getInt(0), notesCursor.getString(1),
                         notesCursor.getString(2), notesCursor.getInt(3), notesCursor.getString(4),
-                        notesCursor.getString(5), notesCursor.getString(6), notesCursor.getString(7));
+                        notesCursor.getString(5), notesCursor.getString(6), notesCursor.getString(7),
+                        notesCursor.getInt(8));
                 list.add(note);
             }
             while (notesCursor.moveToNext());
@@ -119,7 +123,8 @@ class DatabaseHelper extends SQLiteOpenHelper{
         db.close();
     }
 
-    synchronized void saveNewNote(String nameNote, String descriptionNote, int colorNote, String imageLink) {
+    synchronized void saveNewNote(String nameNote, String descriptionNote,
+                                  int colorNote, String imageLink, int serverNoteid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Date curDate = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.FORMAT_ISO);
@@ -133,6 +138,7 @@ class DatabaseHelper extends SQLiteOpenHelper{
         cv.put(DatabaseHelper.COLUMN_DATE_CREATE, date);
         cv.put(DatabaseHelper.COLUMN_DATE_EDIT, date);
         cv.put(DatabaseHelper.COLUMN_DATE_VIEW, date);
+        cv.put(DatabaseHelper.COLUMN_SERVER_ID, serverNoteid);
         db.insert(DatabaseHelper.TABLE, null, cv);
         db.close();
     }

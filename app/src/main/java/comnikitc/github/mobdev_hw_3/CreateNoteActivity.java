@@ -16,16 +16,22 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+
 import comnikitc.github.mobdev_hw_3.ColorPicker.ColorActivity;
 
 public class CreateNoteActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private Boolean inEditMode = false;
     private int idItem = 0;
+    private int serverId;
     private ImageView colorView;
     private EditText nameEditText;
     private EditText descriptionEditText;
     private EditText imageUrlEditText;
+    private RetrofitHelper retrofitHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +44,10 @@ public class CreateNoteActivity extends AppCompatActivity {
         colorView = (ImageView) findViewById(R.id.chooseColorEdit);
         Intent intent = getIntent();
         int id = intent.getIntExtra(Constants.KEY_ID, -1);
+        retrofitHelper = new RetrofitHelper();
         if (id != -1) {
             inEditMode = true;
+            serverId = intent.getIntExtra(Constants.KEY_SERVER_ID, -1);
             idItem = id;
             setOptions(id);
             saveDateView();
@@ -126,6 +134,7 @@ public class CreateNoteActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         deleteNote();
+                        retrofitHelper.deleteNoteServer(serverId);
                     }
                 });
                 deleteNoteThread.start();
@@ -135,7 +144,13 @@ public class CreateNoteActivity extends AppCompatActivity {
                 Thread saveNoteThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        saveData();
+                        try {
+                            saveData();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
                 saveNoteThread.start();
@@ -167,7 +182,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         startActivityForResult(intent, 1);
     }
 
-    private void saveData() {
+    private void saveData() throws IOException, JSONException {
         String nameNote = nameEditText.getText().toString();
         String descriptionNote = descriptionEditText.getText().toString();
         String imageUrl = imageUrlEditText.getText().toString();
@@ -184,9 +199,12 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         int colorNote = (Integer) colorView.getTag();
         if (inEditMode) {
+            retrofitHelper.editNoteToServer(serverId, nameNote, descriptionNote, colorNote);
             dbHelper.saveChangeNote(nameNote, descriptionNote, colorNote, idItem);
         } else {
-            dbHelper.saveNewNote(nameNote, descriptionNote, colorNote, imageUrl);
+            int serverNoteId =
+                    retrofitHelper.addNoteToServer(nameNote, descriptionNote, colorNote, imageUrl);
+            dbHelper.saveNewNote(nameNote, descriptionNote, colorNote, imageUrl, serverNoteId);
         }
         runOnUiThread(new Runnable() {
             @Override

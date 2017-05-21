@@ -34,10 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DatabaseHelper dbHelper;
     private SettingsNotes settings = new SettingsNotes();
     private IOHandlerThread ioHandlerThread;
+    private RetrofitHelper retrofitHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        retrofitHelper = new RetrofitHelper();
         ioHandlerThread = new IOHandlerThread();
         ioHandlerThread.start();
         createListView();
@@ -171,6 +173,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.upload:
                 saveNotesToFile(FILENAME);
                 return true;
+            case R.id.sync:
+                retrofitHelper.synchronizedFromServer();
+                return true;
             case R.id.download:
                 readNotesFromFile(FILENAME);
                 return true;
@@ -208,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void run() {
                     dbHelper.saveNewNote(nameForExample, descrForExample,
-                            colorForExample, urlForExample);
+                            colorForExample, urlForExample, 1);
                 }
             });
             addNoteThread.start();
@@ -219,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 createListView();
             }
         });
-        
+
     }
 
     public void saveNotesToFile(final String filename)  {

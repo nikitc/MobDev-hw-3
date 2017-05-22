@@ -2,7 +2,6 @@ package comnikitc.github.mobdev_hw_3;
 
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +13,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,15 +30,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
 
-
+    private final int COUNT_TO_ADD = 100000;
     private final String FILENAME = "itemlist.ili";
     private ArrayList<NoteModel> listNotes;
     private DatabaseHelper dbHelper;
     private SettingsNotes settings = new SettingsNotes();
+    private IOHandlerThread ioHandlerThread;
+    private RetrofitHelper retrofitHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        retrofitHelper = new RetrofitHelper();
+        ioHandlerThread = new IOHandlerThread();
+        ioHandlerThread.start();
         createListView();
     }
 
@@ -73,15 +79,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         dbHelper = new DatabaseHelper(this);
         final ListView notesList = (ListView) findViewById(R.id.notesListView);
-
         final NotesAdapter notesAdapter = new NotesAdapter(this, dbHelper);
-        notesAdapter.setListNotes(settings.setSettingListNotes(notesAdapter.getListNotes()));
+        Thread sortFilterThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                notesAdapter.setListNotes(settings.setSettingListNotes(notesAdapter.getListNotes()));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        notesAdapter.notifyDataSetChanged();
+                        listNotes = notesAdapter.getListNotes();
+                    }
+                });
+            }
+        });
+        sortFilterThread.start();
         listNotes = notesAdapter.getListNotes();
         notesList.setAdapter(notesAdapter);
-
         final FloatingActionButton addButton = (FloatingActionButton) findViewById(R.id.addNoteFab);
         addButton.setOnClickListener(this);
-
         notesList.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
 
@@ -159,8 +175,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.upload:
                 saveNotesToFile(FILENAME);
                 return true;
+            case R.id.sync:
+                Thread syncThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ArrayList<NoteModel> notes = retrofitHelper.synchronizedFromServer();
+                            dbHelper.addNotesToDataBase(notes);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                syncThread.start();
+                return true;
             case R.id.download:
                 readNotesFromFile(FILENAME);
+                return true;
+            case R.id.add100k:
+                Thread addNotesThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addOneHundredThousandNotes();
+                    }
+                });
+                addNotesThread.start();
                 return true;
         }
 
@@ -177,38 +216,83 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void saveNotesToFile(String filename)  {
-        try {
-            String content = JSONHelper.toJson(listNotes);
-            File file = new File(getFilesDir(), filename);
-            Writer writer = new BufferedWriter(new FileWriter(file));
-            writer.write(content);
-            writer.close();
-            Toast.makeText(getApplicationContext(),
-                    R.string.notes_export, Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void addOneHundredThousandNotes() {
+        final String nameForExample = "5";
+        final String descrForExample = "5";
+        final int colorForExample = -6230;
+        final String urlForExample = "http://";
+        for (int i = 0; i < COUNT_TO_ADD; i++) {
+            Thread addNoteThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dbHelper.saveNewNote(nameForExample, descrForExample,
+                            colorForExample, urlForExample, 1);
+                }
+            });
+            addNoteThread.start();
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                createListView();
+            }
+        });
+
     }
 
-    public void readNotesFromFile(String filename) {
-        try {
-            String result = "";
-            File file = new File(getFilesDir(), filename);
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                result += line;
+    public void saveNotesToFile(final String filename)  {
+        Runnable saveNotesRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String content = JSONHelper.toJson(listNotes);
+                    File file = new File(getFilesDir(), filename);
+                    Writer writer = new BufferedWriter(new FileWriter(file));
+                    writer.write(content);
+                    writer.close();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    R.string.notes_export, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            br.close();
-            ArrayList<NoteModel> notes = JSONHelper.fromJson(result);
-            dbHelper.addNotesToDataBase(notes);
+        };
+        ioHandlerThread.getIoHandler().post(saveNotesRunnable);
+    }
 
-            Toast.makeText(getApplicationContext(), R.string.notes_import,
-                    Toast.LENGTH_SHORT).show();
-            createListView();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void readNotesFromFile(final String filename) {
+        Runnable readNotesRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String result = "";
+                    File file = new File(getFilesDir(), filename);
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        result += line;
+                    }
+                    br.close();
+                    ArrayList<NoteModel> notes = JSONHelper.fromJson(result);
+                    dbHelper.addNotesToDataBase(notes);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), R.string.notes_import,
+                                    Toast.LENGTH_SHORT).show();
+                            createListView();
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        ioHandlerThread.getIoHandler().post(readNotesRunnable);
     }
 }

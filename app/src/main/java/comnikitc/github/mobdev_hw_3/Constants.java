@@ -10,4 +10,5 @@ class Constants {
     static final String KEY_RULE = "rule";
     static final String KEY_FILTER = "filter";
     static final String KEY_DATE = "date";
+    static final String KEY_SERVER_ID = "serverNoteId";
 }

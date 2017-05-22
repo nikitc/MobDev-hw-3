@@ -14,6 +14,8 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -174,7 +176,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 saveNotesToFile(FILENAME);
                 return true;
             case R.id.sync:
-                retrofitHelper.synchronizedFromServer();
+                Thread syncThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ArrayList<NoteModel> notes = retrofitHelper.synchronizedFromServer();
+                            dbHelper.addNotesToDataBase(notes);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                syncThread.start();
                 return true;
             case R.id.download:
                 readNotesFromFile(FILENAME);

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -38,24 +39,11 @@ public class RetrofitHelper {
     }
 
 
-    void synchronizedFromServer() {
-        notesApi.getUserNotes(userId).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response.body());
-                    JSONHelper.fromJson(jsonObject.getString("data"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-               // Toast.makeText(, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-            }
-        });
+    ArrayList<NoteModel> synchronizedFromServer() throws IOException, JSONException {
+        String notesString = notesApi.getUserNotes(userId).execute().body();
+        JSONObject jsonObject = new JSONObject(notesString);
 
-
+        return JSONHelper.fromJson(jsonObject.getString("data"));
     }
 
     void deleteNoteServer(int serverNoteId) {
@@ -86,7 +74,8 @@ public class RetrofitHelper {
                     editNote.setName(nameNote);
                     editNote.setText(descriptionNote);
                     editNote.setColor(colorNote);
-                    notesApi.editNote(userId, editNote.getServerNoteId(), JSONHelper.toJsonNote(editNote))
+                    notesApi.editNote(userId,
+                            editNote.getServerNoteId(), JSONHelper.toJsonNote(editNote))
                             .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call,

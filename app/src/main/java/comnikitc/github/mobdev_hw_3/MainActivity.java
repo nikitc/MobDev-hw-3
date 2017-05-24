@@ -1,8 +1,8 @@
 package comnikitc.github.mobdev_hw_3;
 
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -171,8 +171,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intentSort, SORT_RULE);
                 return true;
             case R.id.filter:
+
                 Fragment frag2 = new FilterFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.add(R.id.filterfrag, frag2);
                 ft.commit();
 

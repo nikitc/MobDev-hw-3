@@ -24,11 +24,4 @@
         android:src="@drawable/ic_add_white_24dp"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/holo_red_dark" />
-
-    <fragment
-        android:id="@+id/createNoteFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:name="comnikitc.github.mobdev_hw_3.CreateNoteFragment"/>
-
 </RelativeLayout>

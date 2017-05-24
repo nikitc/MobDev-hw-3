@@ -1,8 +1,9 @@
 package comnikitc.github.mobdev_hw_3;
 
-
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
+    CreateNoteFragment createNoteFragment;
+    FragmentTransaction fTrans;
 
     private final int COUNT_TO_ADD = 100000;
     private final String FILENAME = "itemlist.ili";
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         retrofitHelper = new RetrofitHelper();
         ioHandlerThread = new IOHandlerThread();
         ioHandlerThread.start();
+        createNoteFragment = new CreateNoteFragment();
         createListView();
     }
 
@@ -210,8 +214,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addNoteFab:
-                Intent intent = new Intent(this, CreateNoteActivity.class);
-                startActivityForResult(intent, ADD_NOTE);
+                CreateNoteFragment fragment = CreateNoteFragment.newInstance("1", "2");
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.createNoteFragment, fragment)
+                        .commit();
                 break;
         }
     }

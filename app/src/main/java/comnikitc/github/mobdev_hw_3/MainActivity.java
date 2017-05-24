@@ -1,9 +1,10 @@
 package comnikitc.github.mobdev_hw_3;
 
-import android.support.v4.app.Fragment;
+
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
-    CreateNoteFragment createNoteFragment;
-    FragmentTransaction fTrans;
 
     private final int COUNT_TO_ADD = 100000;
     private final String FILENAME = "itemlist.ili";
@@ -47,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         retrofitHelper = new RetrofitHelper();
         ioHandlerThread = new IOHandlerThread();
         ioHandlerThread.start();
-        createNoteFragment = new CreateNoteFragment();
         createListView();
     }
 
@@ -173,8 +171,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intentSort, SORT_RULE);
                 return true;
             case R.id.filter:
-                Intent intentFilter = new Intent(this, FilterActivity.class);
-                startActivityForResult(intentFilter, FILTER_RULE);
+                Fragment frag2 = new FilterFragment();
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.add(R.id.filterfrag, frag2);
+                ft.commit();
+
+                //Intent intentFilter = new Intent(this, FilterActivity.class);
+                //startActivityForResult(intentFilter, FILTER_RULE);
                 return true;
             case R.id.upload:
                 saveNotesToFile(FILENAME);
@@ -214,10 +217,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addNoteFab:
-                CreateNoteFragment fragment = CreateNoteFragment.newInstance("1", "2");
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.createNoteFragment, fragment)
-                        .commit();
+                Intent intent = new Intent(this, CreateNoteActivity.class);
+                //fTrans = getFragmentManager().beginTransaction();
+                //fTrans.add(R.id.createNoteFragment, createNoteFragment.);
+                startActivityForResult(intent, ADD_NOTE);
                 break;
         }
     }

@@ -1,11 +1,15 @@
 package comnikitc.github.mobdev_hw_3;
 
 
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -27,7 +31,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity //implements View.OnClickListener,
+        implements NavigationView.OnNavigationItemSelectedListener {
     static final private int SORT_RULE = 0;
     static final private int FILTER_RULE = 1;
     static final private int ADD_NOTE = 2;
@@ -47,12 +52,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ioHandlerThread = new IOHandlerThread();
         ioHandlerThread.start();
         createListView();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         createListView();
+    }
+
+    public void createNavigation() {
+
     }
 
     @Override
@@ -99,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listNotes = notesAdapter.getListNotes();
         notesList.setAdapter(notesAdapter);
         final FloatingActionButton addButton = (FloatingActionButton) findViewById(R.id.addNoteFab);
-        addButton.setOnClickListener(this);
+       // addButton.setOnClickListener(this);
         notesList.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int mLastFirstVisibleItem;
 
@@ -163,58 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sort:
-                Intent intentSort = new Intent(this, SortActivity.class);
-                startActivityForResult(intentSort, SORT_RULE);
-                return true;
-            case R.id.filter:
-
-                Fragment frag2 = new FilterFragment();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(R.id.filterfrag, frag2);
-                ft.commit();
-
-                //Intent intentFilter = new Intent(this, FilterActivity.class);
-                //startActivityForResult(intentFilter, FILTER_RULE);
-                return true;
-            case R.id.upload:
-                saveNotesToFile(FILENAME);
-                return true;
-            case R.id.sync:
-                Thread syncThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ArrayList<NoteModel> notes = retrofitHelper.synchronizedFromServer();
-                            dbHelper.addNotesToDataBase(notes);
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                syncThread.start();
-                return true;
-            case R.id.download:
-                readNotesFromFile(FILENAME);
-                return true;
-            case R.id.add100k:
-                Thread addNotesThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addOneHundredThousandNotes();
-                    }
-                });
-                addNotesThread.start();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
+    //@Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addNoteFab:
@@ -304,5 +264,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
         ioHandlerThread.getIoHandler().post(readNotesRunnable);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_sync:
+                Thread syncThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ArrayList<NoteModel> notes = retrofitHelper.synchronizedFromServer();
+                            dbHelper.addNotesToDataBase(notes);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                syncThread.start();
+                break;
+
+            case R.id.nav_import:
+                readNotesFromFile(FILENAME);
+                break;
+
+            case R.id.nav_export:
+                saveNotesToFile(FILENAME);
+                break;
+
+            case R.id.nav_sort:
+                Intent intentSort = new Intent(this, SortActivity.class);
+                startActivityForResult(intentSort, SORT_RULE);
+                break;
+
+            case R.id.nav_filter:
+                Fragment frag2 = new FilterFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.filterfrag, frag2);
+                ft.commit();
+                break;
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+            return true;
+
     }
 }

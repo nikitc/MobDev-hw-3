@@ -82,8 +82,8 @@ class SettingsNotes {
     }
 
     ArrayList<NoteModel> setSettingListNotes(ArrayList<NoteModel> listNotes) {
-        return filterListNotes(
-                sortListNotes(listNotes));
+        return sortListNotes(
+                filterListNotes(listNotes));
     }
 
     private String translateToDate(String dateISO) {

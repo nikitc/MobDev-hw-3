@@ -9,16 +9,39 @@ class NoteModel {
     private String dateCreate;
     private String dateEdit;
     private String dateView;
+    private String imageUrl;
+    private int serverNoteId;
 
-    NoteModel(int id, String name, String text, int color,
-              String dateCreate, String dateEdit, String dateView) {
+    NoteModel(int id, String name, String text, int color, String imageUrl,
+              String dateCreate, String dateEdit, String dateView, int serverNoteId) {
         this.name = name;
         this.text = text;
         this.color = color;
+        this.imageUrl = imageUrl;
         this.id = id;
         this.dateCreate = dateCreate;
         this.dateEdit = dateEdit;
         this.dateView = dateView;
+        this.serverNoteId = serverNoteId;
+    }
+
+    NoteModel(String name, String text, int color, String imageUrl,
+              String dateCreate, String dateEdit, String dateView) {
+        this.name = name;
+        this.text = text;
+        this.color = color;
+        this.imageUrl = imageUrl;
+        this.dateCreate = dateCreate;
+        this.dateEdit = dateEdit;
+        this.dateView = dateView;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getDateView() {
@@ -75,5 +98,13 @@ class NoteModel {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public int getServerNoteId() {
+        return serverNoteId;
+    }
+
+    public void setServerNoteId(int serverNoteId) {
+        this.serverNoteId = serverNoteId;
     }
 }

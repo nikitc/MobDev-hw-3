@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Работа со списком">
+        <menu>
+            <item
+                android:id="@+id/nav_sync"
+                android:icon="@drawable/ic_sync_black_24dp"
+                android:title="Синхронизация"/>
+            <item
+                android:id="@+id/nav_import"
+                android:icon="@drawable/ic_file_download_white_24dp"
+                android:title="Импорт"/>
+            <item
+                android:id="@+id/nav_export"
+                android:icon="@drawable/ic_file_upload_white_24dp"
+                android:title="Экспорт"/>
+        </menu>
+    </item>
+
+    <item android:title="Опции">
+        <menu>
+            <item
+                android:id="@+id/nav_sort"
+                android:icon="@drawable/ic_sort_white_24dp"
+                android:title="Сортировка"/>
+            <item
+                android:id="@+id/nav_filter"
+                android:icon="@drawable/ic_filter_list_white_24dp"
+                android:title="Фильтрация"/>
+        </menu>
+    </item>
+
+</menu>
